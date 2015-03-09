@@ -24,4 +24,4 @@ require_once( plugin_dir_path( __FILE__ ) . 'class-wp-mylogger.php' );
 register_activation_hook( __FILE__, array( 'My Logger', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'My Logger', 'deactivate' ) );
 
-//My_Logger::get_instance();
+My_Logger::get_instance();

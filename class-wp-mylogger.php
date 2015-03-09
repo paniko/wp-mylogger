@@ -26,7 +26,7 @@ class My_Logger {
 	protected $version = '1.0.0';
 	protected $loggerObject;
 	protected $logger;
-	protected $nameLogger;
+	//protected $nameLogger;
 	protected $typeLogger;
 	protected $parametersLogger;
 	/**
@@ -47,7 +47,7 @@ class My_Logger {
 	 * @var      object
 	 */
 	protected static $instance = null;
-
+	protected static $nameLogger = null;
 	/**
 	 * Slug of the plugin screen.
 	 *
@@ -76,7 +76,7 @@ class My_Logger {
 	const DAILY_DATEPATTERN			= "datePattern";
 	//ROLLING: parameters
 	const ROLLING_FILE				= "file";
-	const ROLLING_APPENDER			= "appender";
+	const ROLLING_APPENDER			= "append";
 	const ROLLING_DATEPATTERN		= "datePattern";
 	const ROLLING_MAX_FILE_SIZE		= "maxFileSize";
 	const ROLLING_MAX_BACKUP_INDEX	= "maxBackupIndex";
@@ -101,7 +101,7 @@ class My_Logger {
 	 *
 	 * @since     1.0.0
 	 */
-	private function __construct($nameLogger = null, $type=null, $parameters=null) {
+	public function __construct($nameLogger = null, $type=null, $parameters=null) {
 		$this->nameLogger = $nameLogger;
 		$this->typeLogger = $type;
 		$this->parametersLogger = $parameters;
@@ -111,7 +111,10 @@ class My_Logger {
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 		// Add the options page and menu item.
-		// add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+		if(empty($nameLogger)){
+			add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+			
+		}
 
 		// Load admin style sheet and JavaScript.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
@@ -134,7 +137,7 @@ class My_Logger {
 	 * @since     1.0.0
 	 * @return    object    A single instance of this class.
 	 */
-	public static function get_instance($nameLogger, $type, $parameters) {
+	public static function get_instance($nameLogger=null, $type=null, $parameters=null) {
 
 		// If the single instance hasn't been set, set it now.
 		if ( null == self::$instance ) {
@@ -267,22 +270,13 @@ class My_Logger {
 	 * @since    1.0.0
 	 */
 	public function add_plugin_admin_menu() {
-
-		/*
-		 * TODO:
-		 *
-		 * Change 'Page Title' to the title of your plugin admin page
-		 * Change 'Menu Text' to the text for menu item for the plugin settings page
-		 * Change 'plugin-name' to the name of your plugin
-		 */
-		$this->plugin_screen_hook_suffix = add_plugins_page(
-			__( 'RCS Logger', $this->plugin_slug ),
-			__( 'RCS Logger', $this->plugin_slug ),
-			'read',
+		$this->plugin_screen_hook_suffix = add_menu_page(
+			__( 'WP MyLogger - Config', $this->plugin_slug ),
+			__( 'WP MyLogger', $this->plugin_slug ),
+			'manage_options',
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
 		);
-
 	}
 
 	/**
